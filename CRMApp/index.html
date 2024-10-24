@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+    <title>Company Dashboard</title>
+</head>
+
+<body>
+
+
+    <main>
+        <h1>Company Dashboard</h1>
+
+        <h2>Add Company</h2>
+        <!-- Add Company Form -->
+        <form id="addCompanyForm">
+            <input type="text" id="companyName" placeholder="Company Name" required>
+            <input type="text" id="companyAddress" placeholder="Address" required>
+            <input type="text" id="companyIndustry" placeholder="Industry" required>
+            <button type="submit">Add Company</button>
+        </form>
+
+
+
+
+
+    </main>
+
+    <div id="tableBox">
+        <!-- Filter Input -->
+        <input type="text" id="filterInput" placeholder="Filter by company name...">
+
+        <!-- Table to Display Companies -->
+        <table id="companyTable">
+            <thead>
+                <tr>
+                    <th class="fa fa-sort" scope="col" onclick="sortTable(0)">Profiles</th>
+                    <th class="fa fa-sort" scope="col" onclick="sortTable(1)">Contacts</th>
+                    <th class="fa fa-sort" scope="col" onclick="sortTable(2)">Company</th>
+                    <th class="fa fa-sort" scope="col" onclick="sortTable(3)">Address</th>
+                    <th class="fa fa-sort" scope="col" onclick="sortTable(4)">Industry</th>
+                    <th class="fa fa-sort" scope="col">Action</th>
+                </tr>
+            </thead>
+            <tbody id="companyTableBody">
+                <!-- Company rows will be dynamically populated here -->
+
+            </tbody>
+        </table>
+    </div>
+
+    <script src="JavaScript.js"></script>
+</body>
+
+</html>

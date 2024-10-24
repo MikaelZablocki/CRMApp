@@ -1,0 +1,111 @@
+/* Basic styling for the login page */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+    display: flex;
+    flex-direction: row;
+    align-items: baseline;
+    height: 100vh;
+    margin: 0;
+}
+
+
+
+main {
+    margin-left: 10vh;
+}
+
+#tableBox {
+    display: flex;
+    flex-direction: column;
+    width: 130vh;
+    margin-left: 6vh;
+}
+
+
+#filterInput{
+ width: 50vh;
+}
+
+form {
+    background: white;
+    padding: 20px;
+    border-radius: 5px; 
+    width: 400px;
+   
+  
+}
+
+
+
+#companyTable button{
+    background-color: rgb(121, 121, 121);
+    width: 100px;
+    border-radius: 50%;
+}
+
+th,
+td {
+  border-top: 2px solid rgb(160 160 160);
+  padding: 8px 10px;
+  width: 8rem;
+ 
+}
+
+
+th[scope='col'] {
+    background-color: #b6b6b6;
+    border-right: 2px solid rgb(160 160 160);
+    color: #fff;
+    font-size: 1rem;
+    font-weight:bold;
+  }
+
+  th[scope='col']:hover {
+    cursor: pointer;
+    
+  }
+
+  table {
+    display: flex;
+    flex-direction: column;
+    border-collapse: collapse;
+    border: 2px solid rgb(140 140 140);
+    font-family: sans-serif;
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+  }
+
+label {
+    display: block;
+    margin: 10px 0 5px;
+}
+
+input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+button {
+    width: 100%;
+    padding: 10px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #218838;
+}
+
+
+
+#error-message {
+    color: red;
+    display: none; /* Hidden by default */
+}
