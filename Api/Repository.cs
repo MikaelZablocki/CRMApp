@@ -61,6 +61,10 @@ namespace Api
             }, parameters);
         }
 
+        //////////////////////
+        /// Users here
+        ////////////////////
+
         // Get a user by ID
         public string GetUserById(int userId)
         {
@@ -103,53 +107,11 @@ namespace Api
             return users.Count > 0 ? users[0] : null;
         }
 
-        // Get a company by ID
-        public Company GetCompanyById(int companyId)
-        {
-            string query = "SELECT CompanyId, CompanyName FROM Companies WHERE CompanyId = @CompanyId";
-            var parameters = new Dictionary<string, object>
-            {
-                { "@CompanyId", companyId }
-            };
+    
 
-            var companies = ExecuteReader(query, reader => new Company
-            {
-                CompanyId = reader.GetInt32(0),
-                CompanyName = reader.GetString(1)
-            }, parameters);
-
-            return companies.Count > 0 ? companies[0] : null;
-        }
-
-        // Get all companies
-        public IEnumerable<Company> GetAllCompanies()
-        {
-            string query = "SELECT CompanyId, CompanyName, Address, Industry, UserId FROM Companies"; // Fetch Address and Industry
-            return ExecuteReader(query, reader => new Company
-            {
-                CompanyId = reader.GetInt32(0),
-                CompanyName = reader.GetString(1),
-                Address = reader.GetString(2), // Read Address
-                Industry = reader.GetString(3), // Read Industry
-                UserId = reader.GetInt32(4) // Read UserId
-            });
-        }
-
-      
-
-        public void AddCompany(Company company)
-        {
-            string query = "INSERT INTO Companies (CompanyName, Address, Industry, UserId) VALUES (@CompanyName, @Address, @Industry, @UserId)";
-            var parameters = new Dictionary<string, object>
-    {
-        { "@CompanyName", company.CompanyName },
-        { "@Address", company.Address },     // Include Address
-        { "@Industry", company.Industry },   // Include Industry
-        { "@UserId", company.UserId }        // UserId will now be set in the controller
-    };
-            ExecuteNonQuery(query, parameters);
-        }
-
+        //////////////////////
+        /// Contacts here
+        ////////////////////
 
 
         // Get a contact by ID
@@ -212,7 +174,57 @@ namespace Api
             // Execute the DELETE query using the ExecuteNonQuery method
             ExecuteNonQuery(query, parameters);
         }
-       
+
+        //////////////////////
+        /// Companies here
+        ////////////////////
+
+        // Get a company by ID
+        public Company GetCompanyById(int companyId)
+        {
+            string query = "SELECT CompanyId, CompanyName FROM Companies WHERE CompanyId = @CompanyId";
+            var parameters = new Dictionary<string, object>
+            {
+                { "@CompanyId", companyId }
+            };
+
+            var companies = ExecuteReader(query, reader => new Company
+            {
+                CompanyId = reader.GetInt32(0),
+                CompanyName = reader.GetString(1)
+            }, parameters);
+
+            return companies.Count > 0 ? companies[0] : null;
+        }
+
+        // Get all companies
+        public IEnumerable<Company> GetAllCompanies()
+        {
+            string query = "SELECT CompanyId, CompanyName, Address, Industry, UserId FROM Companies"; // Fetch Address and Industry
+            return ExecuteReader(query, reader => new Company
+            {
+                CompanyId = reader.GetInt32(0),
+                CompanyName = reader.GetString(1),
+                Address = reader.GetString(2), // Read Address
+                Industry = reader.GetString(3), // Read Industry
+                UserId = reader.GetInt32(4) // Read UserId
+            });
+        }
+
+
+
+        public void AddCompany(Company company)
+        {
+            string query = "INSERT INTO Companies (CompanyName, Address, Industry, UserId) VALUES (@CompanyName, @Address, @Industry, @UserId)";
+            var parameters = new Dictionary<string, object>
+    {
+        { "@CompanyName", company.CompanyName },
+        { "@Address", company.Address },     // Include Address
+        { "@Industry", company.Industry },   // Include Industry
+        { "@UserId", company.UserId }        // UserId will now be set in the controller
+    };
+            ExecuteNonQuery(query, parameters);
+        }
 
         public class CompanyWithContacts
         {
@@ -279,6 +291,43 @@ namespace Api
                 deleteCompanyCommand.Parameters.AddWithValue("@CompanyId", companyId);
                 deleteCompanyCommand.ExecuteNonQuery();
             }
+        }
+
+        //////////////////////
+        /// Meetings here
+        ////////////////////
+
+        // Add a Meeting
+        public void AddMeeting(Meeting meeting)
+        {
+            string query = "INSERT INTO Meetings (MeetingTime, MeetingName, MeetingDescription, UserId, ContactId) VALUES (@MeetingTime, @MeetingName, @MeetingDescription, @UserId, @ContactId)";
+            var parameters = new Dictionary<string, object>
+            {
+                { "@MeetingTime", meeting.MeetingTime },
+                { "@MeetingName", meeting.MeetingName },
+                { "@MeetingDescription", meeting.MeetingDescription },
+                { "@UserId", meeting.UserId },
+                 { "@ContactId", meeting.ContactId }
+            };
+            ExecuteNonQuery(query, parameters);
+        }
+
+        // Get a Meeting by ID
+        public Meeting GetMeetingById(int meetingid)
+        {
+            string query = "SELECT MeetingId, MeetingName FROM Meetings WHERE MeetingId = @MeetingId";
+            var parameters = new Dictionary<string, object>
+            {
+                { "@MeetingId", meetingid }
+            };
+
+            var meetings = ExecuteReader(query, reader => new Meeting
+            {
+                MeetingId = reader.GetInt32(0),
+                MeetingName = reader.GetString(1)
+            }, parameters);
+
+            return meetings.Count > 0 ? meetings[0] : null;
         }
 
 
