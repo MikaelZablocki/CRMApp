@@ -30,6 +30,19 @@ namespace Api.Controllers
             return HandleNotFound(meetingid);
         }
 
+        [HttpDelete("{meetingid}")]
+        public IActionResult DeleteMeeting(int meetingid)
+        {
+            var meetingExists = HandleNotFound(meetingid);
+            if (meetingExists is NotFoundObjectResult)
+            {
+                return meetingExists;
+            }
+
+            _repository.DeleteMeeting(meetingid);
+            return NoContent();
+        }
+
 
         // Fetch meetings for a specific date
         [HttpGet("{userId}/date")] // Use a clearer route for specific date requests

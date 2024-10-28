@@ -297,7 +297,23 @@ namespace Api
         /// Meetings here
         ////////////////////
 
-   
+
+        // Delete Meeting
+        public void DeleteMeeting(int meetingId)
+        {
+            // Define the SQL DELETE query
+            string query = "DELETE FROM Meetings WHERE MeetingId = @MeetingId";
+
+            // Create a dictionary to store the parameter for the query
+            var parameters = new Dictionary<string, object>
+    {
+        { "@MeetingId", meetingId }
+    };
+
+            // Execute the DELETE query using the ExecuteNonQuery method
+            ExecuteNonQuery(query, parameters);
+        }
+
         // Get a Meeting by ID
         public Meeting GetMeetingById(int meetingid)
         {
