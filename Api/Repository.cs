@@ -297,21 +297,7 @@ namespace Api
         /// Meetings here
         ////////////////////
 
-        // Add a Meeting
-        public void AddMeeting(Meeting meeting)
-        {
-            string query = "INSERT INTO Meetings (MeetingTime, MeetingName, MeetingDescription, UserId, ContactId) VALUES (@MeetingTime, @MeetingName, @MeetingDescription, @UserId, @ContactId)";
-            var parameters = new Dictionary<string, object>
-            {
-                { "@MeetingTime", meeting.MeetingTime },
-                { "@MeetingName", meeting.MeetingName },
-                { "@MeetingDescription", meeting.MeetingDescription },
-                { "@UserId", meeting.UserId },
-                 { "@ContactId", meeting.ContactId }
-            };
-            ExecuteNonQuery(query, parameters);
-        }
-
+   
         // Get a Meeting by ID
         public Meeting GetMeetingById(int meetingid)
         {
@@ -329,7 +315,77 @@ namespace Api
 
             return meetings.Count > 0 ? meetings[0] : null;
         }
+        // Method to fetch meetings on a specific date for a user
+        public IEnumerable<Meeting> GetMeetingsByDate(int userId, DateTime meetingDate)
+        {
+            // SQL query to fetch meetings on a specific date for a user
+            string query = @"
+            SELECT MeetingId, MeetingTime, MeetingName, MeetingDescription, UserId, ContactId
+            FROM Meetings
+            WHERE UserId = @UserId AND CAST(MeetingTime AS DATE) = @MeetingDate";
 
+            // Dictionary of parameters for the query
+            var parameters = new Dictionary<string, object>
+        {
+            { "@UserId", userId },
+            { "@MeetingDate", meetingDate.Date } // .Date ensures only the date part is used
+        };
+
+            // Execute the query and map the results to Meeting objects
+            return ExecuteReader(query, reader => new Meeting
+            {
+                MeetingId = reader.GetInt32(0),
+                MeetingTime = reader.GetDateTime(1),
+                MeetingName = reader.GetString(2),
+                MeetingDescription = reader.GetString(3),
+                UserId = reader.GetInt32(4),
+                ContactId = reader.GetInt32(5)
+            }, parameters);
+        }
+
+        // Method to fetch all meetings for a user
+        public IEnumerable<Meeting> GetAllMeetingsByUserId(int userId)
+        {
+            string query = @"
+            SELECT MeetingId, MeetingTime, MeetingName, MeetingDescription, UserId, ContactId
+            FROM Meetings
+            WHERE UserId = @UserId";
+
+            var parameters = new Dictionary<string, object>
+        {
+            { "@UserId", userId }
+        };
+
+            return ExecuteReader(query, reader => new Meeting
+            {
+                MeetingId = reader.GetInt32(0),
+                MeetingTime = reader.GetDateTime(1),
+                MeetingName = reader.GetString(2),
+                MeetingDescription = reader.GetString(3),
+                UserId = reader.GetInt32(4),
+                ContactId = reader.GetInt32(5)
+            }, parameters);
+        }
+
+
+        // Add a new meeting
+        public void AddMeeting(Meeting meeting)
+        {
+            string query = @"
+            INSERT INTO Meetings (MeetingTime, MeetingName, MeetingDescription, UserId, ContactId)
+            VALUES (@MeetingTime, @MeetingName, @MeetingDescription, @UserId, @ContactId)";
+
+            var parameters = new Dictionary<string, object>
+        {
+            { "@MeetingTime", meeting.MeetingTime },
+            { "@MeetingName", meeting.MeetingName },
+            { "@MeetingDescription", meeting.MeetingDescription },
+            { "@UserId", meeting.UserId },
+            { "@ContactId", meeting.ContactId }
+        };
+
+            ExecuteNonQuery(query, parameters);
+        }
 
     }
 }
