@@ -8,12 +8,12 @@ namespace Api.Controllers
     public class MeetingsController : ControllerBase
     {
         private readonly Repository _repository;
-        public MeetingsController()
+
+        public MeetingsController(Repository repository)
         {
-            _repository = new Repository();
+            _repository = repository;
         }
 
-        // Helper method to check if Meetings exists
         private IActionResult HandleNotFound(int meetingId)
         {
             var meeting = _repository.GetMeetingById(meetingId);
@@ -24,51 +24,65 @@ namespace Api.Controllers
             return Ok(meeting);
         }
 
-        [HttpGet("{meetingid}")]
-        public IActionResult GetMeetingById(int meetingid)
+        // GET: api/meetings/{meetingId}
+        [HttpGet("{meetingId}")]
+        public IActionResult GetMeetingById(int meetingId)
         {
-            return HandleNotFound(meetingid);
-        }
-
-        [HttpDelete("{meetingid}")]
-        public IActionResult DeleteMeeting(int meetingid)
-        {
-            var meetingExists = HandleNotFound(meetingid);
-            if (meetingExists is NotFoundObjectResult)
+            var meeting = _repository.GetMeetingById(meetingId); // Implement this method in the repository
+            if (meeting == null)
             {
-                return meetingExists;
+                return NotFound($"Meeting with ID {meetingId} not found.");
             }
-
-            _repository.DeleteMeeting(meetingid);
-            return NoContent();
+            return Ok(meeting);
         }
-
-
-        // Fetch meetings for a specific date
-        [HttpGet("{userId}/date")] // Use a clearer route for specific date requests
-        public IActionResult GetMeetings(int userId, [FromQuery] string meetingDate) // Get date from query
+        // DELETE: api/meetings/{meetingId}
+        [HttpDelete("{meetingId}")]
+        public IActionResult DeleteMeeting(int meetingId)
         {
-            // Parse meetingDate from DD-MM-YYYY to DateTime
-            if (!DateTime.TryParseExact(meetingDate, "dd-MM-yyyy", null, System.Globalization.DateTimeStyles.None, out var parsedDate))
+            try
             {
-                return BadRequest("Invalid date format. Please use DD-MM-YYYY.");
+                _repository.DeleteMeeting(meetingId);
+                return NoContent(); // Return 204 No Content if successful
             }
-
-            // Retrieve meetings for the parsed date from the repository
-            var meetings = _repository.GetMeetingsByDate(userId, parsedDate);
-
-            return Ok(meetings);
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message); // Handle any exceptions and return an error response
+            }
         }
 
-        // Fetch all meetings for a user
-        [HttpGet("{userId}/All")] // This route remains the same
+
+        [HttpGet("user/{userId}/date/{dateString}")]
+        public IActionResult GetMeetingsByDate(int userId, string dateString)
+        {
+            try
+            {
+                var meetings = _repository.GetMeetingsByDate(userId, dateString);
+                if (meetings == null || meetings.Count == 0)
+                {
+                    return NotFound("No meetings found for the specified date.");
+                }
+                return Ok(meetings);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message); // Return 400 Bad Request if the date format is invalid
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message); // Handle other exceptions
+            }
+        }
+
+
+        // GET: api/meetings/user/{userId}
+        [HttpGet("user/{userId}")]
         public IActionResult GetAllMeetings(int userId)
         {
             var meetings = _repository.GetAllMeetingsByUserId(userId);
             return Ok(meetings);
         }
 
-        // Add a new meeting
+        // POST: api/meetings
         [HttpPost]
         public IActionResult AddMeeting([FromBody] Meeting meeting)
         {
@@ -76,11 +90,15 @@ namespace Api.Controllers
             {
                 return BadRequest("Invalid meeting data.");
             }
-          
+
             _repository.AddMeeting(meeting);
-            return CreatedAtAction(nameof(GetMeetings), new { userId = meeting.UserId, meetingDate = meeting.MeetingTime.Date }, meeting);
+            return CreatedAtAction(nameof(GetMeetingById), new { meetingId = meeting.MeetingId }, meeting);
+        }
+
+        private User GetCurrentUser()
+        {
+            // Logic to retrieve the currently logged-in user as a User object
+            return new User { UserId = 1, Username = "testUser" }; // Replace with actual logic
         }
     }
-
 }
-

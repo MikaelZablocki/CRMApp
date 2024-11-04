@@ -1,12 +1,9 @@
-
 namespace Api
 {
     public class Program
     {
-
         public static void Main(string[] args)
         {
-
             var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";  // Define a string constant for CORS policy
 
             var builder = WebApplication.CreateBuilder(args);  // Create a new instance of WebApplicationBuilder
@@ -24,10 +21,12 @@ namespace Api
                                   });
             });
 
-        
             // Add services to the container.
-
             builder.Services.AddControllers();
+
+            // Register the Repository service
+            builder.Services.AddScoped<Repository>(); // Add this line to register Repository
+
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
@@ -46,7 +45,6 @@ namespace Api
             app.UseCors(MyAllowSpecificOrigins);
 
             app.UseAuthorization();
-
 
             app.MapControllers();
 

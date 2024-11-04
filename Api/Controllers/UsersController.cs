@@ -9,13 +9,11 @@ namespace Api.Controllers
     {
         private readonly Repository _repository;
 
-        // Inject IConfiguration into the controller and pass it to the repository
-        public UsersController()
+        public UsersController(Repository repository)
         {
-            _repository = new Repository();
+            _repository = repository;
         }
 
-        // GET: api/user/{id}
         [HttpGet("{id}")]
         public IActionResult GetUserById(int id)
         {
@@ -27,7 +25,6 @@ namespace Api.Controllers
             return Ok(user);
         }
 
-        // POST: api/user
         [HttpPost]
         public IActionResult AddUser([FromBody] User user)
         {
@@ -50,6 +47,5 @@ namespace Api.Controllers
             }
             return Ok(user);
         }
-
     }
 }

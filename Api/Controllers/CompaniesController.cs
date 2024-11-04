@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Data.SqlClient;
 
 namespace Api.Controllers
 {
@@ -10,76 +9,69 @@ namespace Api.Controllers
     {
         private readonly Repository _repository;
 
-        
-        public CompaniesController()
+        public CompaniesController(Repository repository)
         {
-            _repository = new Repository();
-        }
-        // In your CompaniesController
-
-        [HttpGet("WithCompany")]
-        public IActionResult GetCompaniesWithContacts()
-        {
-            var companiesWithContacts = _repository.GetCompaniesWithContacts();
-            return Ok(companiesWithContacts);
+            _repository = repository;
         }
 
+        // New method to get all contacts for a specific company
+        [HttpGet("{companyId}/contacts")]
+        public IActionResult GetContactsByCompany(int companyId)
+        {
+            var contacts = _repository.GetContactsByCompany(companyId);
+            if (contacts == null || contacts.Count == 0)
+            {
+                return NotFound("No contacts found for this company.");
+            }
+            return Ok(contacts);
+        }
 
-
-        // GET: api/notes/{id}
         [HttpGet("{companyid}")]
         public IActionResult GetCompanyById(int companyid)
         {
             var company = _repository.GetCompanyById(companyid);
             if (company == null)
             {
-                return NotFound("Note not found");
+                return NotFound("Company not found");
             }
             return Ok(company);
         }
 
-
-        // POST: api/Companies
+        // POST: api/companies
         [HttpPost]
         public IActionResult AddCompany([FromBody] Company company)
         {
-            // Assuming you have a method to get the current user's ID
-            var userId = GetCurrentUserId(); // This method should return the logged-in user's ID
-
+            // Validate the company object
             if (company == null || string.IsNullOrEmpty(company.CompanyName))
             {
                 return BadRequest("Invalid company data.");
             }
 
-            // Set the UserId to the logged-in user's ID
-            company.UserId = userId;
-
+            // Add the company using the repository
             _repository.AddCompany(company);
-            return CreatedAtAction(nameof(GetCompanyById), new { companyid = company.CompanyId }, company);
+
+            // Return a response with the created company
+            return CreatedAtAction(nameof(GetCompanyById), new { companyId = company.Id }, company);
         }
 
-        // Dummy method to simulate getting current user's ID
-        private int GetCurrentUserId()
+        private User GetCurrentUser()
         {
-            // Logic to retrieve the currently logged-in user's ID
-            return 1; // Replace this with actual logic
+            // Logic to retrieve the currently logged-in user as a User object
+            return new User { UserId = 1, Username = "testUser" }; // Replace with actual logic
         }
-
 
         [HttpDelete("{companyId}")]
         public IActionResult DeleteCompany(int companyId)
         {
             try
             {
-                _repository.DeleteCompany(companyId); // Call the repository method to delete the company and its contacts
-                return NoContent(); // Return 204 No Content if successful
+                _repository.DeleteCompany(companyId);
+                return NoContent();
             }
             catch (Exception ex)
             {
-                return StatusCode(500, ex.Message); // Handle any exceptions and return an error response
+                return StatusCode(500, ex.Message);
             }
         }
-
-
     }
 }
